@@ -241,7 +241,7 @@ A10
 </script>
 
   <div class="status-msg" id="statusMsg"></div>
-  <footer>A10 2026 - IS 117 - Diego Guevara</footer>
-</div>
+      <footer>A10 2026 - IS 117 - Diego Guevara</footer>
+    </div>
 </body>
 </html>
