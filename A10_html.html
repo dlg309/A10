@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A10 – IS 117</title>
+  <link rel="stylesheet" href="cookies_demo.css" />
+</head>
+<body>
+
+<div class="card">
+  <h1>🍪 Cookie Demo</h1>
+  <p class="subtitle">IS 117 — JavaScript Cookies</p>
+
+  <label for="nameInput">Enter your name:</label>
+  <input type="text" id="nameInput" placeholder="e.g. Diego" />
+
+  <div class="row">
+    <button class="btn-set"   onclick="saveCookie()">Set Cookie</button>
+    <button class="btn-clear" onclick="clearCookie()">Clear Cookie</button>
+  </div>
+
+  <div class="cookie-display">
+    <h2>Stored Cookie Value</h2>
+    <div class="cookie-value empty" id="cookieOutput">No cookie found</div>
+    <div class="cookie-raw"         id="cookieRaw"></div>
+  </div>
+
+  <div class="status-msg" id="statusMsg"></div>
+  <footer>A10 2026 - IS 117 - Diego Guevara</footer>
+</div>
+
+<script>
+  /* ── Cookie helpers (W3Schools pattern) ─────────────────────────── */
+
+  function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
+  }
+
+  function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i].trim();
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  function deleteCookie(cname) {
+    document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+  }
+
+  /* ── localStorage fallback (needed when file:// blocks cookies) ─── */
+
+  function storeValue(name, value, days) {
+    setCookie(name, value, days);
+    localStorage.setItem(name, value);
+  }
+
+  function readValue(name) {
+    var fromCookie = getCookie(name);
+    if (fromCookie) return fromCookie;
+    return localStorage.getItem(name) || "";
+  }
+
+  function removeValue(name) {
+    deleteCookie(name);
+    localStorage.removeItem(name);
+  }
+
+  /* ── UI actions ─────────────────────────────────────────────────── */
+
+  function saveCookie() {
+    var name = document.getElementById("nameInput").value.trim();
+    if (!name) {
+      showStatus("Please enter a name first.", "#c0392b");
+      return;
+    }
+    storeValue("visitorName", name, 7);
+    document.getElementById("nameInput").value = "";
+    displayCookie();
+    showStatus("Cookie set! Refresh the page to see it reload.", "#2e74b5");
+  }
+
+  function clearCookie() {
+    removeValue("visitorName");
+    displayCookie();
+    showStatus("Cookie cleared.", "#888");
+  }
+
+  function displayCookie() {
+    var val    = readValue("visitorName");
+    var output = document.getElementById("cookieOutput");
+    var raw    = document.getElementById("cookieRaw");
+
+    if (val) {
+      output.textContent = val;
+      output.classList.remove("empty");
+      raw.textContent = 'document.cookie  ->  "visitorName=' + encodeURIComponent(val) + '"';
+    } else {
+      output.textContent = "No cookie found";
+      output.classList.add("empty");
+      raw.textContent = "";
+    }
+  }
+
+  function showStatus(msg, color) {
+    var el = document.getElementById("statusMsg");
+    el.textContent = msg;
+    el.style.color = color;
+  }
+
+  /* ── On page load ───────────────────────────────────────────────── */
+  window.onload = function () {
+    displayCookie();
+    var existing = readValue("visitorName");
+    if (existing) {
+      showStatus("Welcome back, " + existing + "! Cookie loaded from previous visit.", "#27ae60");
+    }
+  };
+</script>
+
+</body>
+</html>
